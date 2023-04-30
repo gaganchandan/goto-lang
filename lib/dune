@@ -1,0 +1,3 @@
+(library
+ (name goto)
+ (libraries core str))
