@@ -351,21 +351,21 @@ let parse_op (operator : token) (operands : token list) (num : int) : stmt =
       parse_error num "Statements must start with an operator."
   | { token_type = Id } ->
       parse_error num "Statements must start with an operator."
-  | { token_type = Var } -> (parse_var operands num, num)
-  | { token_type = Add } -> (parse_add operands num, num)
-  | { token_type = Sub } -> (parse_sub operands num, num)
-  | { token_type = Mul } -> (parse_mul operands num, num)
-  | { token_type = Div } -> (parse_div operands num, num)
-  | { token_type = Mod } -> (parse_mod operands num, num)
-  | { token_type = GT } -> (parse_gt operands num, num)
-  | { token_type = LT } -> (parse_lt operands num, num)
-  | { token_type = EQ } -> (parse_eq operands num, num)
-  | { token_type = GTE } -> (parse_gte operands num, num)
-  | { token_type = LTE } -> (parse_lte operands num, num)
-  | { token_type = Print } -> (parse_print operands num, num)
-  | { token_type = GetStr } -> (parse_getstr operands num, num)
-  | { token_type = GetInt } -> (parse_getint operands num, num)
-  | { token_type = Goto } -> (parse_goto operands num, num)
+  | { token_type = Var } -> parse_var operands num
+  | { token_type = Add } -> parse_add operands num
+  | { token_type = Sub } -> parse_sub operands num
+  | { token_type = Mul } -> parse_mul operands num
+  | { token_type = Div } -> parse_div operands num
+  | { token_type = Mod } -> parse_mod operands num
+  | { token_type = GT } -> parse_gt operands num
+  | { token_type = LT } -> parse_lt operands num
+  | { token_type = EQ } -> parse_eq operands num
+  | { token_type = GTE } -> parse_gte operands num
+  | { token_type = LTE } -> parse_lte operands num
+  | { token_type = Print } -> parse_print operands num
+  | { token_type = GetStr } -> parse_getstr operands num
+  | { token_type = GetInt } -> parse_getint operands num
+  | { token_type = Goto } -> parse_goto operands num
   | { token_type = Invalid; lexeme } ->
       parse_error num ("Invalid token " ^ lexeme)
 
@@ -377,4 +377,4 @@ let parse_line line =
          Consider filing a bug report."
   | operator :: operands, num -> parse_op operator operands num
 
-let parse = List.map ~f:parse_line
+let parse lines : prog = Array.map ~f:parse_line lines

@@ -5,7 +5,7 @@ type rvalue = Int of int | Str of string | Id of string
 type lvalue = Id of string
 type line = Id of string | Int of int
 
-type op =
+type stmt =
   | Var of lvalue * rvalue
   | Add of lvalue * rvalue * rvalue
   | Sub of lvalue * rvalue * rvalue
@@ -23,5 +23,4 @@ type op =
   | Goto of line
   | Error of string
 
-type stmt = op * int
-type prog = stmt list
+type prog = stmt array

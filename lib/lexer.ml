@@ -56,7 +56,8 @@ let split_on_whitespace str =
   Str.full_split re str
   |> List.filter_map ~f:(function Str.Delim s -> Some s | Str.Text _ -> None)
 
-let clean src = src |> lines |> List.map ~f:split_on_whitespace
+let clean src =
+  src |> lines |> Array.of_list |> Array.map ~f:split_on_whitespace
 
 (* Remove starting and ending qoutes from string literals *)
 let clean_str str =
@@ -112,5 +113,5 @@ let rec line_num_helper num res lines =
 
 let lex src =
   src |> clean
-  |> List.map ~f:(List.map ~f:tokenize)
-  |> line_num_helper 1 [] |> List.rev
+  |> Array.map ~f:(List.map ~f:tokenize)
+  |> Array.to_list |> line_num_helper 1 [] |> List.rev |> Array.of_list
