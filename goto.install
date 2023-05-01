@@ -6,3 +6,7 @@ lib: [
 bin: [
   "_build/install/default/bin/goto"
 ]
+doc: [
+  "_build/install/default/doc/goto/LICENSE"
+  "_build/install/default/doc/goto/README.md"
+]

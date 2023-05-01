@@ -3,47 +3,47 @@ open Core
 type token_type =
   | Int
   | Str
+  | Id
   | Var
   | Add
   | Sub
   | Mul
   | Div
   | Mod
+  | GT
+  | LT
+  | EQ
+  | GTE
+  | LTE
   | Print
   | GetStr
   | GetInt
-  | Check
   | Goto
   | Invalid
 
 type literal_type = Int of int | Str of string
 
+let int_literal_to_int = function
+  | Int num -> num
+  | _ ->
+      print_endline "Invalid operand";
+      exit (-1)
+
+let str_literal_to_str = function
+  | Str str -> str
+  | _ ->
+      print_endline "Invalid operand";
+      exit (-1)
+
 type token = {
   token_type : token_type;
   lexeme : string;
-  literal : string option;
+  literal : literal_type option;
 }
 
-type stmt = token list
-
-let re_var = Str.regexp "[a-zA-z_][a-zA-z0-9_]*"
-let re_num = Str.regexp "0-9"
+let re_var = Str.regexp "^[a-zA-z_][a-zA-z0-9_]*"
+let re_num = Str.regexp "^[-]?^[0-9]+"
 let re_str = Str.regexp "\"[^\"]*\""
-
-let keywords =
-  [
-    "var";
-    "add";
-    "sub";
-    "mul";
-    "div";
-    "mod";
-    "print";
-    "getstr";
-    "getint";
-    "check";
-    "goto";
-  ]
 
 (* Split on lines unless they are wrapped in quotes *)
 let lines src =
@@ -75,21 +75,42 @@ let tokenize = function
   | "mul" -> { token_type = Mul; lexeme = "mul"; literal = None }
   | "div" -> { token_type = Div; lexeme = "div"; literal = None }
   | "mod" -> { token_type = Mod; lexeme = "mod"; literal = None }
+  | "gt" -> { token_type = GT; lexeme = "gt"; literal = None }
+  | "lt" -> { token_type = LT; lexeme = "lt"; literal = None }
+  | "eq" -> { token_type = EQ; lexeme = "eq"; literal = None }
+  | "gte" -> { token_type = GTE; lexeme = "gte"; literal = None }
+  | "lte" -> { token_type = LTE; lexeme = "lte"; literal = None }
   | "print" -> { token_type = Print; lexeme = "print"; literal = None }
   | "getstr" -> { token_type = GetStr; lexeme = "getstr"; literal = None }
   | "getint" -> { token_type = GetInt; lexeme = "getint"; literal = None }
-  | "check" -> { token_type = Check; lexeme = "check"; literal = None }
   | "goto" -> { token_type = Goto; lexeme = "goto"; literal = None }
-  | str when Str.string_match re_str str 0 ->
+  | str
+    when Str.string_match re_str str 0 && Str.match_end () = String.length str
+    ->
       {
         token_type = Str;
         lexeme = str;
-        literal = Some (str |> clean_str |> unescape);
+        literal = Some (Str (str |> clean_str |> unescape));
       }
-  | id when Str.string_match re_var id 0 ->
-      { token_type = Str; lexeme = id; literal = Some id }
-  | num when Str.string_match re_num num 0 ->
-      { token_type = Int; lexeme = num; literal = Some num }
+  | id when Str.string_match re_var id 0 && Str.match_end () = String.length id
+    ->
+      { token_type = Id; lexeme = id; literal = None }
+  | num
+    when Str.string_match re_num num 0 && Str.match_end () = String.length num
+    ->
+      {
+        token_type = Int;
+        lexeme = num;
+        literal = Some (Int (Int.of_string num));
+      }
   | invalid -> { token_type = Invalid; lexeme = invalid; literal = None }
 
-let lex = List.map ~f:tokenize
+let rec line_num_helper num res lines =
+  match lines with
+  | [] -> res
+  | line :: rest -> line_num_helper (num + 1) ((line, num) :: res) rest
+
+let lex src =
+  src |> clean
+  |> List.map ~f:(List.map ~f:tokenize)
+  |> line_num_helper 1 [] |> List.rev
