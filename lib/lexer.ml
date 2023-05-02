@@ -13,12 +13,14 @@ type token_type =
   | GT
   | LT
   | EQ
-  | GTE
-  | LTE
+  | NEQ
+  | GE
+  | LE
   | Print
   | GetStr
   | GetInt
   | Goto
+  | Exit
   | Invalid
 
 type literal_type = Int of int | Str of string
@@ -79,12 +81,13 @@ let tokenize = function
   | "gt" -> { token_type = GT; lexeme = "gt"; literal = None }
   | "lt" -> { token_type = LT; lexeme = "lt"; literal = None }
   | "eq" -> { token_type = EQ; lexeme = "eq"; literal = None }
-  | "gte" -> { token_type = GTE; lexeme = "gte"; literal = None }
-  | "lte" -> { token_type = LTE; lexeme = "lte"; literal = None }
+  | "ge" -> { token_type = GE; lexeme = "ge"; literal = None }
+  | "le" -> { token_type = LE; lexeme = "le"; literal = None }
   | "print" -> { token_type = Print; lexeme = "print"; literal = None }
   | "getstr" -> { token_type = GetStr; lexeme = "getstr"; literal = None }
   | "getint" -> { token_type = GetInt; lexeme = "getint"; literal = None }
   | "goto" -> { token_type = Goto; lexeme = "goto"; literal = None }
+  | "exit" -> { token_type = Exit; lexeme = "exit"; literal = None }
   | str
     when Str.string_match re_str str 0 && Str.match_end () = String.length str
     ->

@@ -53,8 +53,8 @@ let is_line (token : token) : bool =
   | { token_type = Id } -> true
   | _ -> false
 
-let get_lexeme (token : token) : string =
-  match token with { lexeme } -> lexeme
+let is_int (token : token) : bool =
+  match token with { token_type = Int } -> true | _ -> false
 
 let[@warning "-8"] parse_var operands num =
   match operands with
@@ -65,8 +65,8 @@ let[@warning "-8"] parse_var operands num =
   | [ id; value ] ->
       if is_lvalue id then
         if is_rvalue value then Var (token_to_lvalue id, token_to_rvalue value)
-        else parse_error num (get_lexeme value ^ " is not a valid value.")
-      else parse_error num (get_lexeme id ^ " is not a valid variable.")
+        else parse_error num (value.lexeme ^ " is not a valid value.")
+      else parse_error num (id.lexeme ^ " is not a valid variable.")
 
 let[@warning "-8"] parse_add operands num =
   match operands with
@@ -81,13 +81,13 @@ let[@warning "-8"] parse_add operands num =
             Add (token_to_lvalue dest, token_to_rvalue op1, token_to_rvalue op2)
           else
             parse_error num
-              (get_lexeme op2 ^ " is not a valid operand for the add operator.")
+              (op2.lexeme ^ " is not a valid operand for the add operator.")
         else
           parse_error num
-            (get_lexeme op1 ^ " is not a valid operand for the add operator.")
+            (op1.lexeme ^ " is not a valid operand for the add operator.")
       else
         parse_error num
-          (get_lexeme dest
+          (dest.lexeme
          ^ " is not a valid destination for the add operator. Destination must \
             be a variable.")
 
@@ -104,13 +104,13 @@ let[@warning "-8"] parse_sub operands num =
             Add (token_to_lvalue dest, token_to_rvalue op1, token_to_rvalue op2)
           else
             parse_error num
-              (get_lexeme op2 ^ " is not a valid operand for the sub operator.")
+              (op2.lexeme ^ " is not a valid operand for the sub operator.")
         else
           parse_error num
-            (get_lexeme op1 ^ " is not a valid operand for the sub operator.")
+            (op1.lexeme ^ " is not a valid operand for the sub operator.")
       else
         parse_error num
-          (get_lexeme dest
+          (dest.lexeme
          ^ " is not a valid destination for the sub operator. Destination must \
             be a variable.")
 
@@ -127,13 +127,13 @@ let[@warning "-8"] parse_mul operands num =
             Add (token_to_lvalue dest, token_to_rvalue op1, token_to_rvalue op2)
           else
             parse_error num
-              (get_lexeme op2 ^ " is not a valid operand for the mul operator.")
+              (op2.lexeme ^ " is not a valid operand for the mul operator.")
         else
           parse_error num
-            (get_lexeme op1 ^ " is not a valid operand for the mul operator.")
+            (op1.lexeme ^ " is not a valid operand for the mul operator.")
       else
         parse_error num
-          (get_lexeme dest
+          (dest.lexeme
          ^ " is not a valid destination for the mul operator. Destination must \
             be a variable.")
 
@@ -150,13 +150,13 @@ let[@warning "-8"] parse_div operands num =
             Add (token_to_lvalue dest, token_to_rvalue op1, token_to_rvalue op2)
           else
             parse_error num
-              (get_lexeme op2 ^ " is not a valid operand for the div operator.")
+              (op2.lexeme ^ " is not a valid operand for the div operator.")
         else
           parse_error num
-            (get_lexeme op1 ^ " is not a valid operand for the div operator.")
+            (op1.lexeme ^ " is not a valid operand for the div operator.")
       else
         parse_error num
-          (get_lexeme dest
+          (dest.lexeme
          ^ " is not a valid destination for the div operator. Destination must \
             be a variable.")
 
@@ -173,13 +173,13 @@ let[@warning "-8"] parse_mod operands num =
             Add (token_to_lvalue dest, token_to_rvalue op1, token_to_rvalue op2)
           else
             parse_error num
-              (get_lexeme op2 ^ " is not a valid operand for the mod operator.")
+              (op2.lexeme ^ " is not a valid operand for the mod operator.")
         else
           parse_error num
-            (get_lexeme op1 ^ " is not a valid operand for the mod operator.")
+            (op1.lexeme ^ " is not a valid operand for the mod operator.")
       else
         parse_error num
-          (get_lexeme dest
+          (dest.lexeme
          ^ " is not a valid destination for the mod operator. Destination must \
             be a variable.")
 
@@ -194,12 +194,12 @@ let[@warning "-8"] parse_gt operands num =
         if is_rvalue op2 then GT (token_to_rvalue op1, token_to_rvalue op2)
         else
           parse_error num
-            (get_lexeme op2
+            (op2.lexeme
            ^ " is not a valid operand for the gt operator. Operand must be an \
               integer literal, string literal, or a variable.")
       else
         parse_error num
-          (get_lexeme op1
+          (op1.lexeme
          ^ " is not a valid operand for the gt operator. Operand must be an \
             integer literal, string literal, or a variable.")
 
@@ -218,12 +218,12 @@ let[@warning "-8"] parse_lt operands num =
         if is_rvalue op2 then LT (token_to_rvalue op1, token_to_rvalue op2)
         else
           parse_error num
-            (get_lexeme op2
+            (op2.lexeme
            ^ " is not a valid operand for the lt operator. Operand must be an \
               integer literal, string literal, or a variable.")
       else
         parse_error num
-          (get_lexeme op1
+          (op1.lexeme
          ^ " is not a valid operand for the lt operator. Operand must be an \
             integer literal, string literal, or a variable.")
 
@@ -238,53 +238,73 @@ let[@warning "-8"] parse_eq operands num =
         if is_rvalue op2 then EQ (token_to_rvalue op1, token_to_rvalue op2)
         else
           parse_error num
-            (get_lexeme op2
+            (op2.lexeme
            ^ " is not a valid operand for the eq operator. Operand must be an \
               integer literal, string literal, or a variable.")
       else
         parse_error num
-          (get_lexeme op1
+          (op1.lexeme
          ^ " is not a valid operand for the eq operator. Operand must be an \
             integer literal, string literal, or a variable.")
 
-let[@warning "-8"] parse_gte operands num =
+let[@warning "-8"] parse_neq operands num =
   match operands with
   | _ when List.length operands < 2 ->
-      parse_error num "Too few operands for the gte operator."
+      parse_error num "Too few operands for the neq operator."
   | _ when List.length operands > 2 ->
-      parse_error num "Too many operands for the gte operator."
+      parse_error num "Too many operands for the neq operator."
   | [ op1; op2 ] ->
       if is_rvalue op1 then
-        if is_rvalue op2 then GTE (token_to_rvalue op1, token_to_rvalue op2)
+        if is_rvalue op2 then NEQ (token_to_rvalue op1, token_to_rvalue op2)
         else
           parse_error num
-            (get_lexeme op2
-           ^ " is not a valid operand for the gte operator. Operand must be an \
+            (op2.lexeme
+           ^ " is not a valid operand for the neq operator. Operand must be an \
               integer literal, string literal, or a variable.")
       else
         parse_error num
-          (get_lexeme op1
-         ^ " is not a valid operand for the gte operator. Operand must be an \
+          (op1.lexeme
+         ^ " is not a valid operand for the eq operator. Operand must be an \
             integer literal, string literal, or a variable.")
 
-let[@warning "-8"] parse_lte operands num =
+let[@warning "-8"] parse_ge operands num =
   match operands with
   | _ when List.length operands < 2 ->
-      parse_error num "Too few operands for the lte operator."
+      parse_error num "Too few operands for the ge operator."
   | _ when List.length operands > 2 ->
-      parse_error num "Too many operands for the lte operator."
+      parse_error num "Too many operands for the ge operator."
   | [ op1; op2 ] ->
       if is_rvalue op1 then
-        if is_rvalue op2 then LTE (token_to_rvalue op1, token_to_rvalue op2)
+        if is_rvalue op2 then GE (token_to_rvalue op1, token_to_rvalue op2)
         else
           parse_error num
-            (get_lexeme op2
-           ^ " is not a valid operand for the lte operator. Operand must be an \
+            (op2.lexeme
+           ^ " is not a valid operand for the ge operator. Operand must be an \
               integer literal, string literal, or a variable.")
       else
         parse_error num
-          (get_lexeme op1
-         ^ " is not a valid operand for the lte operator. Operand must be an \
+          (op1.lexeme
+         ^ " is not a valid operand for the ge operator. Operand must be an \
+            integer literal, string literal, or a variable.")
+
+let[@warning "-8"] parse_le operands num =
+  match operands with
+  | _ when List.length operands < 2 ->
+      parse_error num "Too few operands for the le operator."
+  | _ when List.length operands > 2 ->
+      parse_error num "Too many operands for the le operator."
+  | [ op1; op2 ] ->
+      if is_rvalue op1 then
+        if is_rvalue op2 then LE (token_to_rvalue op1, token_to_rvalue op2)
+        else
+          parse_error num
+            (op2.lexeme
+           ^ " is not a valid operand for the le operator. Operand must be an \
+              integer literal, string literal, or a variable.")
+      else
+        parse_error num
+          (op1.lexeme
+         ^ " is not a valid operand for the le operator. Operand must be an \
             integer literal, string literal, or a variable.")
 
 let[@warning "-8"] parse_print operands num =
@@ -297,7 +317,7 @@ let[@warning "-8"] parse_print operands num =
       if is_rvalue op then Print (token_to_rvalue op)
       else
         parse_error num
-          (get_lexeme op
+          (op.lexeme
          ^ " is not a valid operand for the print operator. Operand must be a \
             integer literal, string literal or a variable.")
 
@@ -311,7 +331,7 @@ let[@warning "-8"] parse_getstr operands num =
       if is_lvalue dest then GetStr (token_to_lvalue dest)
       else
         parse_error num
-          (get_lexeme dest
+          (dest.lexeme
          ^ " is not a valid operand for the getstr operator. Operand must be a \
             variable.")
 
@@ -325,7 +345,7 @@ let[@warning "-8"] parse_getint operands num =
       if is_lvalue dest then GetInt (token_to_lvalue dest)
       else
         parse_error num
-          (get_lexeme dest
+          (dest.lexeme
          ^ " is not a valid operand for the getint operator. Operand must be a \
             variable.")
 
@@ -339,9 +359,23 @@ let[@warning "-8"] parse_goto operands num =
       if is_line dest then Goto (token_to_line dest)
       else
         parse_error num
-          (get_lexeme dest
+          (dest.lexeme
          ^ " is not a valid operand for the goto operator. Operand must be an \
             integer literal or a variable.")
+
+let[@warning "-8"] parse_exit operands num =
+  match operands with
+  | _ when List.length operands < 1 ->
+      parse_error num "Too few operands for the exit operator."
+  | _ when List.length operands > 1 ->
+      parse_error num "Too many operands for the exit operator."
+  | [ op ] ->
+      if is_int op then Exit (op.lexeme |> int_of_string)
+      else
+        parse_error num
+          (op.lexeme
+         ^ " is not a valid operand for the exit operator. Operand must be an \
+            integer indicating the exit code")
 
 let parse_op (operator : token) (operands : token list) (num : int) : stmt =
   match operator with
@@ -360,12 +394,14 @@ let parse_op (operator : token) (operands : token list) (num : int) : stmt =
   | { token_type = GT } -> parse_gt operands num
   | { token_type = LT } -> parse_lt operands num
   | { token_type = EQ } -> parse_eq operands num
-  | { token_type = GTE } -> parse_gte operands num
-  | { token_type = LTE } -> parse_lte operands num
+  | { token_type = NEQ } -> parse_neq operands num
+  | { token_type = GE } -> parse_ge operands num
+  | { token_type = LE } -> parse_le operands num
   | { token_type = Print } -> parse_print operands num
   | { token_type = GetStr } -> parse_getstr operands num
   | { token_type = GetInt } -> parse_getint operands num
   | { token_type = Goto } -> parse_goto operands num
+  | { token_type = Exit } -> parse_exit operands num
   | { token_type = Invalid; lexeme } ->
       parse_error num ("Invalid token " ^ lexeme)
 
