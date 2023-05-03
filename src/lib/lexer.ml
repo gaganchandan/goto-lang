@@ -46,11 +46,14 @@ type token = {
 let re_var = Str.regexp "^[a-zA-z_][a-zA-z0-9_]*"
 let re_num = Str.regexp "^[-]?^[0-9]+"
 let re_str = Str.regexp "\"[^\"]*\""
+let re_comment = Str.regexp "^--.*"
+let not_comment str = not (Str.string_match re_comment str 0)
 
 (* Split on lines unless they are wrapped in quotes *)
 let lines src =
   let non_empty str = not (String.is_empty str) in
   src |> String.split_lines |> List.filter ~f:non_empty
+  |> List.filter ~f:not_comment
 
 (* Split on whitespaces unless they are wrapped in quotes *)
 let split_on_whitespace str =
