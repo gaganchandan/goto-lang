@@ -1,0 +1,28 @@
+PRINT "Enter the number of iterations:\n"
+GETINT n
+ADD n n 1
+VAR i 0
+ADD i i 1
+EQ i n
+GOTO 28
+VAR matched 0
+EQ i 1
+GOTO 12
+PRINT "\n"
+MOD res1 i 3
+MOD res2 i 5
+EQ res1 0
+GOTO 17
+GOTO 19
+PRINT "Fizz"
+VAR matched 1
+EQ res2 0
+GOTO 22
+GOTO 24
+PRINT "Buzz"
+VAR matched 1
+EQ matched 1
+GOTO 5
+PRINT i
+GOTO 5
+EXIT 0

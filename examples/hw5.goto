@@ -1,0 +1,6 @@
+VAR i 0
+PRINT "Hello, World!\n"
+ADD i i 1
+LT i 5
+GOTO 2
+EXIT 0

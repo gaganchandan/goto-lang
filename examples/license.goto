@@ -1,0 +1,8 @@
+VAR license "QHSMP"
+PRINT "Enter the license key:\n"
+GETSTR inp
+EQ license inp
+GOTO 8
+PRINT "Incorrect license key\n"
+EXIT 0
+PRINT "Access granted\n"
