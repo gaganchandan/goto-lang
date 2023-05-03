@@ -8,7 +8,7 @@ GOTO 28
 VAR matched 0
 EQ i 1
 GOTO 12
-PRINT "\n"
+PRINT " "
 MOD res1 i 3
 MOD res2 i 5
 EQ res1 0
