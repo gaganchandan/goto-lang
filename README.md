@@ -14,8 +14,22 @@ dune exec --release goto <program>
 
 ` INSTR op1 op2 .. opn`
 
-Control flow is performed using the `goto` instruction. Conditional `goto` instruction make use of something known as the `cmpflag` which is partly inspired by flags and conditional jumps in `x86` assembly.
+Control flow is performed using the `goto` instruction. Conditional `goto` instruction make use of something known as the `cmpflag` which is partly inspired by flags and conditional jumps in `x86` assembly. Comments are supported as well, and begin with `--` as seen in Lua.
 
-For more information, look at the documentation.
+For a detailed description on the various instructions and langauge features, consult the documents in `references/`. The `examples/` directory contains trivial programs showcasing `goto-lang`'s abilities.
+If you just want a "Hello, World!" program, then here you go!
 
+```
+PRINT "Hello, World!\n"
+```
 
+A slightly more complex variant:
+
+```
+PRINT "What is your name?\n"
+GETSTR name 
+VAR msg "Hello, "
+ADD msg msg name
+ADD msg msg "!\n"
+PRINT msg
+```
