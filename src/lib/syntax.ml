@@ -24,5 +24,7 @@ type stmt =
   | GetInt of lvalue
   | Goto of line
   | Exit of int
+  | Comment
+  | Empty
 
 type prog = stmt array

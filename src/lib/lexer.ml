@@ -21,6 +21,8 @@ type token_type =
   | GetInt
   | Goto
   | Exit
+  | Comment
+  | Empty
   | Invalid
 
 type literal_type = Int of int | Str of string
@@ -52,8 +54,7 @@ let not_comment str = not (Str.string_match re_comment str 0)
 (* Split on lines unless they are wrapped in quotes *)
 let lines src =
   let non_empty str = not (String.is_empty str) in
-  src |> String.split_lines |> List.filter ~f:non_empty
-  |> List.filter ~f:not_comment
+  src |> String.split_lines
 
 (* Split on whitespaces unless they are wrapped in quotes *)
 let split_on_whitespace str =
@@ -74,7 +75,7 @@ let unescape str =
   let re = Str.regexp "\\\\n" in
   Str.global_replace re "\n" str
 
-let tokenize = function
+let tokenize_helper = function
   | "VAR" | "var" -> { token_type = Var; lexeme = "var"; literal = None }
   | "ADD" | "add" -> { token_type = Add; lexeme = "add"; literal = None }
   | "SUB" | "sub" -> { token_type = Sub; lexeme = "sub"; literal = None }
@@ -121,7 +122,13 @@ let rec line_num_helper num res lines =
   | [] -> res
   | line :: rest -> line_num_helper (num + 1) ((line, num) :: res) rest
 
+let tokenize line =
+  match line with
+  | [] -> [ { token_type = Empty; lexeme = ""; literal = None } ]
+  | str when Str.string_match re_comment (List.hd_exn str) 0 ->
+      [ { token_type = Comment; lexeme = ""; literal = None } ]
+  | str -> List.map ~f:tokenize_helper str
+
 let lex src =
-  src |> clean
-  |> Array.map ~f:(List.map ~f:tokenize)
-  |> Array.to_list |> line_num_helper 1 [] |> List.rev |> Array.of_list
+  src |> clean |> Array.map ~f:tokenize |> Array.to_list |> line_num_helper 1 []
+  |> List.rev |> Array.of_list

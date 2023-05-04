@@ -402,6 +402,8 @@ let parse_op (instruction : token) (operands : token list) (num : int) : stmt =
   | { token_type = GetInt } -> parse_getint operands num
   | { token_type = Goto } -> parse_goto operands num
   | { token_type = Exit } -> parse_exit operands num
+  | { token_type = Comment } -> Comment
+  | { token_type = Empty } -> Empty
   | { token_type = Invalid; lexeme } ->
       parse_error num ("Invalid token " ^ lexeme)
 

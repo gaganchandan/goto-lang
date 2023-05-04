@@ -1,28 +1,30 @@
-PRINT "Enter the number of iterations:\n"
+-- FizzBuzz program in goto
+
+PRINT "Enter a number:\n"
 GETINT n
 ADD n n 1
 VAR i 0
 ADD i i 1
 EQ i n
-GOTO 28
+GOTO 30
 VAR matched 0
 EQ i 1
-GOTO 12
+GOTO 14
 PRINT " "
 MOD res1 i 3
 MOD res2 i 5
 EQ res1 0
-GOTO 17
 GOTO 19
+GOTO 21
 PRINT "Fizz"
 VAR matched 1
 EQ res2 0
-GOTO 22
 GOTO 24
+GOTO 26
 PRINT "Buzz"
 VAR matched 1
 EQ matched 1
-GOTO 5
+GOTO 7
 PRINT i
-GOTO 5
+GOTO 7
 EXIT 0

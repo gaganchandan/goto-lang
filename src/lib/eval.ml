@@ -386,6 +386,7 @@ let eval_stmt (stmt : stmt) (context : context) : context =
   | GetInt _ -> eval_getint stmt context
   | Goto _ -> eval_goto stmt context
   | Exit _ -> eval_exit stmt context
+  | Comment | Empty -> { env = context.env; cmpflag = 1; cur = context.cur + 1 }
 
 let rec eval_helper (context : context) (prog : prog) : unit =
   let len = Array.length prog in
