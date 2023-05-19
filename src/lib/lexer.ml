@@ -6,10 +6,17 @@ type token_type =
   | Id
   | Var
   | Add
+  | Addi
+  | Inc
   | Sub
+  | Subi
+  | Dec
   | Mul
+  | Muli
   | Div
+  | Divi
   | Mod
+  | Modi
   | GT
   | LT
   | EQ
@@ -46,7 +53,7 @@ type token = {
 }
 
 let re_var = Str.regexp "^[a-zA-z_][a-zA-z0-9_]*"
-let re_num = Str.regexp "^[-]?^[0-9]+"
+let re_num = Str.regexp "^[-]?[0-9]+"
 let re_str = Str.regexp "\"[^\"]*\""
 let re_comment = Str.regexp "^--.*"
 let not_comment str = not (Str.string_match re_comment str 0)
@@ -78,10 +85,17 @@ let unescape str =
 let tokenize_helper = function
   | "VAR" | "var" -> { token_type = Var; lexeme = "var"; literal = None }
   | "ADD" | "add" -> { token_type = Add; lexeme = "add"; literal = None }
+  | "ADDI" | "addi" -> { token_type = Addi; lexeme = "addi"; literal = None }
+  | "INC" | "inc" -> { token_type = Inc; lexeme = "inc"; literal = None }
   | "SUB" | "sub" -> { token_type = Sub; lexeme = "sub"; literal = None }
+  | "SUBI" | "subi" -> { token_type = Subi; lexeme = "subi"; literal = None }
+  | "DEC" | "dec" -> { token_type = Dec; lexeme = "dec"; literal = None }
   | "MUL" | "mul" -> { token_type = Mul; lexeme = "mul"; literal = None }
+  | "MULI" | "muli" -> { token_type = Muli; lexeme = "muli"; literal = None }
   | "DIV" | "div" -> { token_type = Div; lexeme = "div"; literal = None }
+  | "DIVI" | "divi" -> { token_type = Divi; lexeme = "divi"; literal = None }
   | "MOD" | "mod" -> { token_type = Mod; lexeme = "mod"; literal = None }
+  | "MODI" | "modi" -> { token_type = Modi; lexeme = "modi"; literal = None }
   | "GT" | "gt" -> { token_type = GT; lexeme = "gt"; literal = None }
   | "LT" | "lt" -> { token_type = LT; lexeme = "lt"; literal = None }
   | "EQ" | "eq" -> { token_type = EQ; lexeme = "eq"; literal = None }

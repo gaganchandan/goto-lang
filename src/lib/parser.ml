@@ -91,6 +91,27 @@ let[@warning "-8"] parse_add operands num =
          ^ " is not a valid destination for the add instruction. Destination \
             must be a variable.")
 
+let[@warning "-8"] parse_addi operands num =
+  match operands with
+  | _ when List.length operands < 2 ->
+      parse_error num "Too few operands for the addi instruction."
+  | _ when List.length operands > 2 ->
+      parse_error num "Too many operands for the addi instruction."
+  | [ dest; op ] -> parse_add [ dest; dest; op ] num
+
+let[@warning "-8"] parse_inc operands num =
+  match operands with
+  | _ when List.length operands < 1 ->
+      parse_error num "Too few operands for the inc instruction."
+  | _ when List.length operands > 1 ->
+      parse_error num "Too many operands for the inc instruction."
+  | [ dest ] ->
+      parse_add
+        [
+          dest; dest; { token_type = Int; lexeme = "1"; literal = Some (Int 1) };
+        ]
+        num
+
 let[@warning "-8"] parse_sub operands num =
   match operands with
   | _ when List.length operands < 3 ->
@@ -113,6 +134,27 @@ let[@warning "-8"] parse_sub operands num =
           (dest.lexeme
          ^ " is not a valid destination for the sub instruction. Destination \
             must be a variable.")
+
+let[@warning "-8"] parse_subi operands num =
+  match operands with
+  | _ when List.length operands < 2 ->
+      parse_error num "Too few operands for the subi instruction."
+  | _ when List.length operands > 2 ->
+      parse_error num "Too many operands for the subi instruction."
+  | [ dest; op ] -> parse_sub [ dest; dest; op ] num
+
+let[@warning "-8"] parse_dec operands num =
+  match operands with
+  | _ when List.length operands < 1 ->
+      parse_error num "Too few operands for the dec instruction."
+  | _ when List.length operands > 1 ->
+      parse_error num "Too many operands for the dec instruction."
+  | [ dest ] ->
+      parse_sub
+        [
+          dest; dest; { token_type = Int; lexeme = "1"; literal = Some (Int 1) };
+        ]
+        num
 
 let[@warning "-8"] parse_mul operands num =
   match operands with
@@ -137,6 +179,14 @@ let[@warning "-8"] parse_mul operands num =
          ^ " is not a valid destination for the mul instruction. Destination \
             must be a variable.")
 
+let[@warning "-8"] parse_muli operands num =
+  match operands with
+  | _ when List.length operands < 2 ->
+      parse_error num "Too few operands for the muli instruction."
+  | _ when List.length operands > 2 ->
+      parse_error num "Too many operands for the muli instruction."
+  | [ dest; op ] -> parse_mul [ dest; dest; op ] num
+
 let[@warning "-8"] parse_div operands num =
   match operands with
   | _ when List.length operands < 3 ->
@@ -160,6 +210,14 @@ let[@warning "-8"] parse_div operands num =
          ^ " is not a valid destination for the div instruction. Destination \
             must be a variable.")
 
+let[@warning "-8"] parse_divi operands num =
+  match operands with
+  | _ when List.length operands < 2 ->
+      parse_error num "Too few operands for the divi instruction."
+  | _ when List.length operands > 2 ->
+      parse_error num "Too many operands for the divi instruction."
+  | [ dest; op ] -> parse_div [ dest; dest; op ] num
+
 let[@warning "-8"] parse_mod operands num =
   match operands with
   | _ when List.length operands < 3 ->
@@ -182,6 +240,14 @@ let[@warning "-8"] parse_mod operands num =
           (dest.lexeme
          ^ " is not a valid destination for the mod instruction. Destination \
             must be a variable.")
+
+let[@warning "-8"] parse_modi operands num =
+  match operands with
+  | _ when List.length operands < 2 ->
+      parse_error num "Too few operands for the modi instruction."
+  | _ when List.length operands > 2 ->
+      parse_error num "Too many operands for the modi instruction."
+  | [ dest; op ] -> parse_mod [ dest; dest; op ] num
 
 let[@warning "-8"] parse_gt operands num =
   match operands with
@@ -387,10 +453,17 @@ let parse_op (instruction : token) (operands : token list) (num : int) : stmt =
       parse_error num "Statements must start with an instruction."
   | { token_type = Var } -> parse_var operands num
   | { token_type = Add } -> parse_add operands num
+  | { token_type = Addi } -> parse_addi operands num
+  | { token_type = Inc } -> parse_inc operands num
   | { token_type = Sub } -> parse_sub operands num
+  | { token_type = Subi } -> parse_subi operands num
+  | { token_type = Dec } -> parse_dec operands num
   | { token_type = Mul } -> parse_mul operands num
+  | { token_type = Muli } -> parse_muli operands num
   | { token_type = Div } -> parse_div operands num
+  | { token_type = Divi } -> parse_divi operands num
   | { token_type = Mod } -> parse_mod operands num
+  | { token_type = Modi } -> parse_modi operands num
   | { token_type = GT } -> parse_gt operands num
   | { token_type = LT } -> parse_lt operands num
   | { token_type = EQ } -> parse_eq operands num
