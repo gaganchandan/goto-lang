@@ -1,30 +1,44 @@
 -- FizzBuzz program in goto
 
-PRINT "Enter a number:\n"
-GETINT n
-ADD n n 1
-VAR i 0
-ADD i i 1
-EQ i n
-GOTO 30
-VAR matched 0
-EQ i 1
-GOTO 14
-PRINT " "
-MOD res1 i 3
-MOD res2 i 5
-EQ res1 0
-GOTO 19
-GOTO 21
-PRINT "Fizz"
-VAR matched 1
-EQ res2 0
-GOTO 24
-GOTO 26
-PRINT "Buzz"
-VAR matched 1
-EQ matched 1
-GOTO 7
-PRINT i
-GOTO 7
-EXIT 0
+_main:
+    PRINT "Enter a number: "
+    GETINT n
+    INC n
+    VAR i 1
+    VAR matched 0
+    GOTO _fizzbuzz 
+
+_fizzbuzz:
+    EQ i n
+    GOTO _end
+    
+_check3:
+    MOD res i 3
+    NEQ res 0
+    GOTO _check5
+    PRINT "Fizz"
+    VAR matched 1
+    GOTO _check5
+
+_check5:
+    MOD res i 5
+    NEQ res 0
+    GOTO _check
+    PRINT "Buzz"
+    VAR matched 1
+    GOTO _check
+
+_check:
+    EQ matched 1
+    GOTO _loop
+    PRINT i
+    GOTO _loop
+    
+_loop:
+    PRINT " "
+    VAR matched 0
+    INC i
+    GOTO _fizzbuzz
+
+_end:
+    EXIT 0

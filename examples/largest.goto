@@ -1,0 +1,22 @@
+-- Program to print the largest of two numbers
+
+_main:
+    PRINT "Enter two numbers:\n"
+    PRINT "a: "
+    GETINT a
+    PRINT "b: "
+    GETINT b
+    GT a b
+    GOTO _greater
+    LT a b
+    GOTO _lesser
+    PRINT "Both numbers are equal."
+    EXIT 0
+
+_greater:
+    PRINT "a is greater."
+    EXIT 0
+
+_lesser:
+    PRINT "b is greater."
+    EXIT 0

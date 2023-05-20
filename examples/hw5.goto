@@ -1,7 +1,12 @@
 -- Print "Hello, World!\n" 5 times
-VAR i 0
-PRINT "Hello, World!\n"
-ADD i i 1
-LT i 5
-GOTO 3
-EXIT 0
+
+_main:
+    VAR i 0
+    GOTO _loop
+    
+_loop:
+    PRINT "Hello, World!\n"
+    ADD i i 1
+    LT i 5
+    GOTO _loop
+    EXIT 0

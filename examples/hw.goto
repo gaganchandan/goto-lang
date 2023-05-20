@@ -1,2 +1,3 @@
 -- Hello World in goto
-PRINT "Hello, World!\n"
+_main:
+    PRINT "Hello, World!\n"
