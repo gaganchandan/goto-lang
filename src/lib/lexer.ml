@@ -27,12 +27,14 @@ type token_type =
   | GetStr
   | GetInt
   | Goto
+  | Label
+  | LabelName
   | Exit
   | Comment
   | Empty
   | Invalid
 
-type literal_type = Int of int | Str of string
+type literal_type = Int of int | Str of string | Lab of string
 
 let int_literal_to_int = function
   | Int num -> num
@@ -52,16 +54,16 @@ type token = {
   literal : literal_type option;
 }
 
-let re_var = Str.regexp "^[a-zA-z_][a-zA-z0-9_]*"
-let re_num = Str.regexp "^[-]?[0-9]+"
-let re_str = Str.regexp "\"[^\"]*\""
-let re_comment = Str.regexp "^--.*"
+let re_var = Str.regexp "^[a-zA-z][a-zA-z0-9_]*$"
+let re_lab = Str.regexp "^[_][a-zA-z0-9_]+:$"
+let re_labname = Str.regexp "^[_][a-zA-z0-9_]+$"
+let re_num = Str.regexp "^[-]?[0-9]+$"
+let re_str = Str.regexp "\"[^\"]*\"$"
+let re_comment = Str.regexp "^--.*$"
 let not_comment str = not (Str.string_match re_comment str 0)
 
 (* Split on lines unless they are wrapped in quotes *)
-let lines src =
-  let non_empty str = not (String.is_empty str) in
-  src |> String.split_lines
+let lines src = src |> String.split_lines
 
 (* Split on whitespaces unless they are wrapped in quotes *)
 let split_on_whitespace str =
@@ -109,6 +111,8 @@ let tokenize_helper = function
   | "GETINT" | "getint" ->
       { token_type = GetInt; lexeme = "getint"; literal = None }
   | "GOTO" | "goto" -> { token_type = Goto; lexeme = "goto"; literal = None }
+  | "LABEL" | "label" ->
+      { token_type = Label; lexeme = "label"; literal = None }
   | "EXIT" | "exit" -> { token_type = Exit; lexeme = "exit"; literal = None }
   | str
     when Str.string_match re_str str 0 && Str.match_end () = String.length str
@@ -118,12 +122,20 @@ let tokenize_helper = function
         lexeme = str;
         literal = Some (Str (str |> clean_str |> unescape));
       }
-  | id when Str.string_match re_var id 0 && Str.match_end () = String.length id
-    ->
+  | lab when Str.string_match re_lab lab 0 ->
+      let remove_last str =
+        String.sub str ~pos:0 ~len:(String.length str - 1)
+      in
+      {
+        token_type = Label;
+        lexeme = lab;
+        literal = Some (Lab (remove_last lab));
+      }
+  | labname when Str.string_match re_labname labname 0 ->
+      { token_type = LabelName; lexeme = labname; literal = Some (Lab labname) }
+  | id when Str.string_match re_var id 0 ->
       { token_type = Id; lexeme = id; literal = None }
-  | num
-    when Str.string_match re_num num 0 && Str.match_end () = String.length num
-    ->
+  | num when Str.string_match re_num num 0 ->
       {
         token_type = Int;
         lexeme = num;

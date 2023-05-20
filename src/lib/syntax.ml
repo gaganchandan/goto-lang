@@ -3,7 +3,8 @@ open Lexer
 
 type rvalue = Int of int | Str of string | Id of string
 type lvalue = Id of string
-type line = Id of string | Int of int
+type label = Lab of string
+type labelname = LabName of string
 type data = Int of int | Str of string
 
 type stmt =
@@ -22,7 +23,8 @@ type stmt =
   | Print of rvalue
   | GetStr of lvalue
   | GetInt of lvalue
-  | Goto of line
+  | Goto of labelname
+  | Label of label
   | Exit of int
   | Comment
   | Empty

@@ -42,16 +42,19 @@ let resolve (rvalue : rvalue) (env : env) (line : int) : data =
   | Str s -> Str s
   | Id i -> env_fetch i env (line + 1)
 
-let resolve_line (line : line) (env : env) (cur : int) : int =
-  match line with
-  | Int n -> n - 1
-  | Id i -> (
-      let value = env_fetch i env cur in
-      match value with
-      | Int n -> n - 1
-      | Str s ->
-          eval_error (cur + 1)
-            "A string cannot be passed to the goto instruction.")
+let resolve_label (labelname : labelname) (prog : prog) (context : context) :
+    int =
+  let rec resolve_label' (label : string) (prog : prog) (line : int) : int =
+    if line < Array.length prog then
+      match prog.(line) with
+      | Label (Lab lab) when String.equal label lab -> line + 1
+      | _ -> resolve_label' label prog (line + 1)
+    else if String.equal label "_main" then (
+      print_endline "Label _main is not defined.";
+      exit (-1))
+    else eval_error context.cur ("Label " ^ label ^ " is not defined.")
+  in
+  match labelname with LabName name -> resolve_label' name prog 0
 
 let[@warning "-8"] eval_var (stmt : stmt) (context : context) : context =
   match stmt with
@@ -347,16 +350,17 @@ let[@warning "-8"] eval_getint (stmt : stmt) (context : context) : context =
         cur = context.cur + 1;
       }
 
-let[@warning "-8"] eval_goto (stmt : stmt) (context : context) : context =
+let[@warning "-8"] eval_goto (stmt : stmt) (context : context) (prog : prog) :
+    context =
   match stmt with
-  | Goto line ->
+  | Goto labelname ->
       if context.cmpflag = 0 then
         { env = context.env; cmpflag = 1; cur = context.cur + 1 }
       else if context.cmpflag = 1 then
         {
           env = context.env;
           cmpflag = 1;
-          cur = resolve_line line context.env context.cur;
+          cur = resolve_label labelname prog context;
         }
       else (
         print_endline
@@ -367,7 +371,7 @@ let[@warning "-8"] eval_goto (stmt : stmt) (context : context) : context =
 let[@warning "-8"] eval_exit (stmt : stmt) _ =
   match stmt with Exit code -> exit code
 
-let eval_stmt (stmt : stmt) (context : context) : context =
+let eval_stmt (stmt : stmt) (context : context) (prog : prog) : context =
   match stmt with
   | Var _ -> eval_var stmt context
   | Add _ -> eval_add stmt context
@@ -384,16 +388,25 @@ let eval_stmt (stmt : stmt) (context : context) : context =
   | Print _ -> eval_print stmt context
   | GetStr _ -> eval_getstr stmt context
   | GetInt _ -> eval_getint stmt context
-  | Goto _ -> eval_goto stmt context
+  | Goto _ -> eval_goto stmt context prog
   | Exit _ -> eval_exit stmt context
-  | Comment | Empty -> { env = context.env; cmpflag = 1; cur = context.cur + 1 }
+  | Comment | Empty | Label _ ->
+      { env = context.env; cmpflag = 1; cur = context.cur + 1 }
 
 let rec eval_helper (context : context) (prog : prog) : unit =
   let len = Array.length prog in
   if context.cur = len then exit 0
   else if context.cur > -1 && context.cur < len then
     let stmt = prog.(context.cur) in
-    eval_helper (eval_stmt stmt context) prog
+    eval_helper (eval_stmt stmt context prog) prog
   else eval_error (context.cur + 1) "Invalid line number"
 
-let eval = eval_helper { env = []; cmpflag = 1; cur = 0 }
+let eval (prog : prog) =
+  eval_helper
+    {
+      env = [];
+      cmpflag = 1;
+      cur =
+        resolve_label (LabName "_main") prog { env = []; cmpflag = 1; cur = -1 };
+    }
+    prog

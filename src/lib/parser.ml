@@ -26,14 +26,20 @@ let token_to_lvalue (token : token) : lvalue =
         "Not an lvalue. This should not happen. Consider filing a bug report.";
       exit (-1)
 
-let token_to_line (token : token) : line =
+let token_to_label (token : token) : label =
   match token with
-  | { token_type = Id; lexeme } -> Id lexeme
-  | { token_type = Int; literal = Some literal } ->
-      Int (Lexer.int_literal_to_int literal)
+  | { token_type = Label; literal = Some (Lab s) } -> Lab s
   | _ ->
       print_endline
-        "Not a valid line. This should not happen. Consider filing a bug \
+        "Not a label. This should not happen. Consider filing a bug report.";
+      exit (-1)
+
+let token_to_labelname (token : token) : labelname =
+  match token with
+  | { token_type = LabelName; literal = Some (Lab s) } -> LabName s
+  | _ ->
+      print_endline
+        "Not a label name. This should not happen. Consider filing a bug \
          report.";
       exit (-1)
 
@@ -47,14 +53,14 @@ let is_rvalue (token : token) : bool =
 let is_lvalue (token : token) : bool =
   match token with { token_type = Id } -> true | _ -> false
 
-let is_line (token : token) : bool =
-  match token with
-  | { token_type = Int } -> true
-  | { token_type = Id } -> true
-  | _ -> false
-
 let is_int (token : token) : bool =
   match token with { token_type = Int } -> true | _ -> false
+
+let is_label (token : token) : bool =
+  match token with { token_type = Label } -> true | _ -> false
+
+let is_labelname (token : token) : bool =
+  match token with { token_type = LabelName } -> true | _ -> false
 
 let[@warning "-8"] parse_var operands num =
   match operands with
@@ -421,13 +427,13 @@ let[@warning "-8"] parse_goto operands num =
       parse_error num "Too few operands for the goto instruction."
   | _ when List.length operands > 1 ->
       parse_error num "Too many operands for the goto instruction."
-  | [ dest ] ->
-      if is_line dest then Goto (token_to_line dest)
+  | [ labelname ] ->
+      if is_labelname labelname then Goto (token_to_labelname labelname)
       else
         parse_error num
-          (dest.lexeme
+          (labelname.lexeme
          ^ " is not a valid operand for the goto instruction. Operand must be \
-            an integer literal or a variable.")
+            a valid label name")
 
 let[@warning "-8"] parse_exit operands num =
   match operands with
@@ -446,11 +452,13 @@ let[@warning "-8"] parse_exit operands num =
 let parse_op (instruction : token) (operands : token list) (num : int) : stmt =
   match instruction with
   | { token_type = Int } ->
-      parse_error num "Statements must start with an instruction."
+      parse_error num "Lines must start with an instruction or label."
   | { token_type = Str } ->
-      parse_error num "Statements must start with an instruction."
+      parse_error num "Lines must start with an instruction or label."
   | { token_type = Id } ->
-      parse_error num "Statements must start with an instruction."
+      parse_error num "Lines must start with an instruction or label."
+  | { token_type = LabelName } ->
+      parse_error num "Lines must start with an instruction or label."
   | { token_type = Var } -> parse_var operands num
   | { token_type = Add } -> parse_add operands num
   | { token_type = Addi } -> parse_addi operands num
@@ -474,6 +482,7 @@ let parse_op (instruction : token) (operands : token list) (num : int) : stmt =
   | { token_type = GetStr } -> parse_getstr operands num
   | { token_type = GetInt } -> parse_getint operands num
   | { token_type = Goto } -> parse_goto operands num
+  | { token_type = Label } -> Label (token_to_label instruction)
   | { token_type = Exit } -> parse_exit operands num
   | { token_type = Comment } -> Comment
   | { token_type = Empty } -> Empty
