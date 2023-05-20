@@ -10,7 +10,7 @@ dune exec --release goto <program>
 ```
 
 # Language features
-`goto-lang` only allows operations in two data types, `integers` and `string`. Variables can be defined of either of these two types. 17 different instructions are avaailabe. The general syntax for instructions is as follows:
+`goto-lang` only allows operations in two data types, `integers` and `string`. Variables can be defined of either of these two types. 24 different instructions are avaailabe. The general syntax for instructions is as follows:
 
 ` INSTR op1 op2 .. opn`
 
@@ -20,16 +20,18 @@ For a detailed description on the various instructions and langauge features, co
 If you just want a "Hello, World!" program, then here you go!
 
 ```
-PRINT "Hello, World!\n"
+_main:
+  PRINT "Hello, World!\n"
 ```
 
 A slightly more complex variant:
 
 ```
-PRINT "What is your name?\n"
-GETSTR name 
-VAR msg "Hello, "
-ADD msg msg name
-ADD msg msg "!\n"
-PRINT msg
+_main:
+  PRINT "What is your name?\n"
+  GETSTR name 
+  VAR msg "Hello, "
+  ADDI msg name
+  ADDI msg "!\n"
+  PRINT msg
 ```
