@@ -6,7 +6,7 @@ _main:
     
 _loop:
     PRINT "Hello, World!\n"
-    ADD i i 1
+    INC i
     LT i 5
     GOTO _loop
     EXIT 0
