@@ -5,7 +5,7 @@ homepage: "https://github.com/gaganchandan/goto-lang"
 bug-reports: "https://github.com/gaganchandan/goto-lang/issues"
 depends: [
   "ocaml"
-  "dune" {>= "3.4"}
+  "dune" {>= "3.8"}
   "odoc" {with-doc}
 ]
 build: [

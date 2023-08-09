@@ -6,7 +6,6 @@ _main:
     INC n
     VAR i 1
     VAR matched 0
-    GOTO _fizzbuzz 
 
 _fizzbuzz:
     EQ i n
@@ -18,7 +17,6 @@ _check3:
     GOTO _check5
     PRINT "Fizz"
     VAR matched 1
-    GOTO _check5
 
 _check5:
     MOD res i 5
@@ -26,14 +24,12 @@ _check5:
     GOTO _check
     PRINT "Buzz"
     VAR matched 1
-    GOTO _check
 
 _check:
     EQ matched 1
     GOTO _loop
     PRINT i
-    GOTO _loop
-    
+
 _loop:
     PRINT " "
     VAR matched 0
