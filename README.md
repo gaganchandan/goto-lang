@@ -9,7 +9,7 @@ dune build --release
 dune exec --release goto <program>
 ```
 
-# Language features
+## Language features
 `goto-lang` only allows operations in two data types, `integers` and `string`. Variables can be defined of either of these two types. 24 different instructions are avaailabe. The general syntax for instructions is as follows:
 
 ` INSTR op1 op2 .. opn`
