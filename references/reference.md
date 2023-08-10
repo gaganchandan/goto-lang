@@ -1,9 +1,9 @@
-#GOTO-LANG 
+# GOTO-LANG 
 
 `goto-lang`, or simply `goto`, is a simple language consisting of 17 different instructions. There is only on instruction used for switching control flow which is the `goto` instruction and hence the name. 
 
 
-###Syntax
+### Syntax
 
 The general syntax for statements in `goto` is as follows:
 
@@ -14,12 +14,12 @@ The general syntax for statements in `goto` is as follows:
 In plain words, all statements consist of an instruction followed by it's operands. Every statement must start with an instruction. Instructions can only be fully lowercase or fully uppercase.
 
 
-###Datatypes
+### Datatypes
 
 There are only 2 datatypes in `goto`, namely `strings` and `integers`. Strings are enclosed within double qoutes only. Negative integers can also be used.
 
 
-###Identifiers and Labels
+### Identifiers and Labels
 
 `goto` does not contain function calls, and hence control flow is carried out with the use of jumps to 'labels'. The syntax for labels is as follows:
 
@@ -38,7 +38,7 @@ Label names must begin with an underscore and can be followed by any number of a
 Identifiers/variables must start with an alphabet(lowercase or uppercase) and can be followed any number of alphanumeric characters or underscores. It is important to note that they cannot begin with underscores in order to differentiate them from labels.
 
 
-###Comments and Whitespaces
+### Comments and Whitespaces
 
 Comments begin with `--`. Only single line comments are supported.
 
@@ -46,12 +46,12 @@ Comments begin with `--`. Only single line comments are supported.
 Whitespaces are used to seperate tokens. They have no other significance.
 
 
-###Instructions 
+### Instructions 
 
 A detailed description of the available instructions follows.
 
 
-#####VAR
+##### VAR
 
 The `VAR` instruction is used to create variables. The syntax is as follows:
 
