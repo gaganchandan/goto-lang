@@ -1,6 +1,6 @@
 -- Print "Hello, World!\n" 5 times
 
-_main:
+_entry:
     VAR i 0
     GOTO _loop
     

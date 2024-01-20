@@ -1,6 +1,6 @@
 -- License checker
 
-_main:
+_entry:
     VAR license "QHSMP"
     PRINT "Enter the license key:\n"
     GETSTR inp

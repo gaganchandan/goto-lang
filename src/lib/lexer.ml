@@ -111,8 +111,6 @@ let tokenize_helper = function
   | "GETINT" | "getint" ->
       { token_type = GetInt; lexeme = "getint"; literal = None }
   | "GOTO" | "goto" -> { token_type = Goto; lexeme = "goto"; literal = None }
-  | "LABEL" | "label" ->
-      { token_type = Label; lexeme = "label"; literal = None }
   | "EXIT" | "exit" -> { token_type = Exit; lexeme = "exit"; literal = None }
   | str
     when Str.string_match re_str str 0 && Str.match_end () = String.length str

@@ -1,6 +1,6 @@
 -- Program to print the largest of two numbers
 
-_main:
+_entry:
     PRINT "Enter two numbers:\n"
     PRINT "a: "
     GETINT a

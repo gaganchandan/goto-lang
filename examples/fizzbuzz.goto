@@ -1,6 +1,6 @@
 -- FizzBuzz program in goto
 
-_main:
+_entry:
     PRINT "Enter a number: "
     GETINT n
     INC n
